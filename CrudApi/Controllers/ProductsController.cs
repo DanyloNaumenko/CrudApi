@@ -1,4 +1,5 @@
 using CrudApi.Models;
+using CrudApi.Services;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
@@ -6,24 +7,36 @@ namespace CrudApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ProductsController: ControllerBase
+public class ProductsController(ProductService productService) : ControllerBase
 {
-    private readonly Product[] _products = [
-        new Product(1, "First", 10),
-        new Product(2, "Second", 20),
-        new Product(3, "Third", 30)
-    ];
-    
     [HttpGet]
-    public IEnumerable<Product> Get()
+    public IEnumerable<Product> GetAll()
     {
-        return _products;
+        return productService.GetAll();
     }
 
     [HttpGet("{id}")]
-    public ActionResult<Product> Get(int id)
+    public ActionResult<Product> GetById(int id)
     {
-        var product = _products.FirstOrDefault(p => p.Id == id);
-        return product == null ? NotFound() : Ok(product);
+        var product = productService.GetById(id);
+        return product != null ? Ok(product) : NotFound();
+    }
+
+    [HttpPost]
+    public ActionResult Post([FromBody] Product product)
+    {
+        var result = productService.Create(product);
+        return CreatedAtAction(nameof(GetById), new { id = product.Id }, product);
+    }
+
+    [HttpDelete("{id}")]
+    public ActionResult Delete(int id)
+    {
+        return productService.DeleteById(id) ? NoContent() : NotFound();
+    }
+    [HttpPut("{id}")]
+    public ActionResult Put([FromBody] Product product, int id)
+    {
+        return productService.Update(product, id) ? NoContent() : NotFound();
     }
 }
