@@ -1,16 +1,17 @@
+using CrudApi.DTOs;
 using CrudApi.Models;
 
 namespace CrudApi.Services;
 
 public class ProductService
 {
-    private readonly List<Product> _products =
+    private static readonly List<Product> _products =
     [
         new Product(1, "First", 10),
         new Product(2, "Second", 20),
         new Product(3, "Third", 30)
     ];
-    
+    private static int currentId = _products.Max(p => p.Id);
     public IEnumerable<Product> GetAll()
     {
         return _products;
@@ -23,7 +24,8 @@ public class ProductService
     }
     public Product Create(Product product)
     {
-        _products.Add(product);
+        var newProduct = product with {Id = ++currentId};
+        _products.Add(newProduct);
         return product;
     }
 

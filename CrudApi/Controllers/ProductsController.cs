@@ -1,3 +1,4 @@
+using CrudApi.DTOs;
 using CrudApi.Models;
 using CrudApi.Services;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -10,23 +11,30 @@ namespace CrudApi.Controllers;
 public class ProductsController(ProductService productService) : ControllerBase
 {
     [HttpGet]
-    public IEnumerable<Product> GetAll()
+    public IEnumerable<ProductDto> GetAll()
     {
-        return productService.GetAll();
+        return productService
+            .GetAll()
+            .Select(p => new ProductDto(p.Id, p.Name, p.Price));
     }
 
     [HttpGet("{id}")]
-    public ActionResult<Product> GetById(int id)
+    public ActionResult<ProductDto> GetById(int id)
     {
         var product = productService.GetById(id);
-        return product != null ? Ok(product) : NotFound();
+        if(product == null) return NotFound();
+        var responseObjectDto = new ProductDto(product.Id, product.Name, product.Price);
+        return Ok(responseObjectDto);
     }
 
     [HttpPost]
-    public ActionResult Post([FromBody] Product product)
+    public ActionResult Post([FromBody] CreateProductDto createProductDto)
     {
-        var result = productService.Create(product);
-        return CreatedAtAction(nameof(GetById), new { id = product.Id }, product);
+        if(createProductDto.Price < 0 || createProductDto.Name.Trim().Length == 0) return BadRequest();
+        
+        var product = new Product(0, createProductDto.Name, createProductDto.Price);
+        var responseObject = productService.Create(product);
+        return CreatedAtAction(nameof(GetById), new { id = responseObject.Id }, responseObject);
     }
 
     [HttpDelete("{id}")]
@@ -35,8 +43,11 @@ public class ProductsController(ProductService productService) : ControllerBase
         return productService.DeleteById(id) ? NoContent() : NotFound();
     }
     [HttpPut("{id}")]
-    public ActionResult Put([FromBody] Product product, int id)
+    public ActionResult Put([FromBody] UpdateProductDto updateProductDto, int id)
     {
-        return productService.Update(product, id) ? NoContent() : NotFound();
+        if(updateProductDto.Price < 0 || updateProductDto.Name.Trim().Length == 0) return BadRequest();
+        
+        var newProduct = new Product(0, updateProductDto.Name, updateProductDto.Price);
+        return productService.Update(newProduct, id) ? NoContent() : NotFound();
     }
 }
