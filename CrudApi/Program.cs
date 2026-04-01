@@ -1,3 +1,4 @@
+using CrudApi.Middleware;
 using CrudApi.Models;
 using CrudApi.Services;
 
@@ -15,6 +16,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseMiddleware<RequestLoggingMiddleware>();
 
 app.UseHttpsRedirection();
 
