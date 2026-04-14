@@ -1,9 +1,10 @@
 using CrudApi.DTOs;
+using CrudApi.Interfaces;
 using CrudApi.Models;
 
 namespace CrudApi.Services;
 
-public class ProductService
+public class ProductService : IProductService
 {
     private static readonly List<Product> _products =
     [

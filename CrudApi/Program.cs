@@ -1,3 +1,4 @@
+using CrudApi.Interfaces;
 using CrudApi.Middleware;
 using CrudApi.Models;
 using CrudApi.Services;
@@ -7,7 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddSingleton<ProductService>();
+builder.Services.AddScoped<IProductService, ProductService>();
 
 var app = builder.Build();
 

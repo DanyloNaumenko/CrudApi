@@ -1,4 +1,5 @@
 using CrudApi.DTOs;
+using CrudApi.Interfaces;
 using CrudApi.Models;
 using CrudApi.Services;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -8,7 +9,7 @@ namespace CrudApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ProductsController(ProductService productService) : ControllerBase
+public class ProductsController(IProductService productService) : ControllerBase
 {
     [HttpGet]
     public IEnumerable<ProductDto> GetAll()
