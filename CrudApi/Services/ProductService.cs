@@ -6,42 +6,35 @@ namespace CrudApi.Services;
 
 public class ProductService : IProductService
 {
-    private static readonly List<Product> _products =
-    [
-        new Product(1, "First", 10),
-        new Product(2, "Second", 20),
-        new Product(3, "Third", 30)
-    ];
-    private static int currentId = _products.Max(p => p.Id);
+    private readonly IProductRepository _repository;
+    public ProductService(IProductRepository repository)
+    {
+        _repository = repository;
+    }
     public IEnumerable<Product> GetAll()
     {
-        return _products;
+        return _repository.GetAll();
     }
     
     public Product? GetById(int id)
     {
-        var product = _products.FirstOrDefault(p => p.Id == id);
-        return product;
+        return _repository.GetById(id);
     }
+    
     public Product Create(Product product)
     {
-        var newProduct = product with {Id = ++currentId};
-        _products.Add(newProduct);
-        return product;
+        return _repository.Create(product);
     }
-
-    public bool DeleteById(int id)
-    {
-        var product = GetById(id);
-        return product != null && _products.Remove(product);
-    }
-
+    
     public bool Update(Product inputProduct, int id)
     {
-        var newProduct = inputProduct with { Id = id };
-        var index = _products.FindIndex(p => p.Id == id);
-        if (index < 0) return false;
-        _products[index] = newProduct;
-        return true;
+        return _repository.Update(inputProduct, id);
     }
+    
+    public bool DeleteById(int id)
+    {
+        return _repository.DeleteById(id);
+    }
+
+    
 }

@@ -18,11 +18,11 @@ builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddSingleton(npgsqlDataSource);
 
 var app = builder.Build();
-
+app.UseSwagger();
+app.UseSwaggerUI();
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    
 }
 
 app.UseMiddleware<RequestLoggingMiddleware>();

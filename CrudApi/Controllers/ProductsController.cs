@@ -34,8 +34,9 @@ public class ProductsController(IProductService productService) : ControllerBase
         if(createProductDto.Price < 0 || createProductDto.Name.Trim().Length == 0) return BadRequest();
         
         var product = new Product(0, createProductDto.Name, createProductDto.Price);
-        var responseObject = productService.Create(product);
-        return CreatedAtAction(nameof(GetById), new { id = responseObject.Id }, responseObject);
+        var responseProduct = productService.Create(product);
+        var responseProductDto = new ProductDto(responseProduct.Id, responseProduct.Name, responseProduct.Price);
+        return CreatedAtAction(nameof(GetById), new { id = responseProductDto.Id }, responseProductDto);
     }
 
     [HttpDelete("{id}")]
