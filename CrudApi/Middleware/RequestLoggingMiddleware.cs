@@ -7,14 +7,15 @@ public class RequestLoggingMiddleware(RequestDelegate next, ILogger<RequestLoggi
 {
     public async Task Invoke(HttpContext httpContext)
     {
+        var sw = Stopwatch.StartNew();
         logger.LogInformation(
             "Method: {Method}; Path: {Path}",  
             httpContext.Request.Method, 
             httpContext.Request.Path);
         
-        var sw = Stopwatch.StartNew();
         await next(httpContext);
         sw.Stop();
+        
         logger.LogInformation( 
             "Status: {StatusCode}; Duration: {Elapsed} ms",
             httpContext.Response.StatusCode,
